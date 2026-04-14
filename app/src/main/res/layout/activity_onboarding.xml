@@ -76,7 +76,7 @@
                 android:id="@+id/btn_login_cns"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:background="@drawable/bg_item_top"
                 android:gravity="center_vertical"
                 android:onClick="onLoginCnsClick"
