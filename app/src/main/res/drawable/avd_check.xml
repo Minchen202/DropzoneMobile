@@ -1,0 +1,6 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_check_anim">
+    <target
+        android:name="check_path"
+        android:animation="@animator/morph_to_check" />
+</animated-vector>

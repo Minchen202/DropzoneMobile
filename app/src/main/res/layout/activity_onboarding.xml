@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="#3D3147">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_slab_medium"
+            android:text="Welcome to"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:translationY="-50dp" />
+
+        <TextView
+            android:layout_width="494dp"
+            android:layout_height="71dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/roboto_flex"
+            android:text="Dropzone"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="40sp"
+            android:textFontWeight="1000"
+            android:textStyle="bold"
+            android:translationY="-50dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="250dp"
+            android:text="Sync your files with ShareIt."
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/white"
+            android:translationY="-50dp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="250dp"
+            android:text="Sign in with CNS or scan the QR"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/white"
+            android:translationY="-50dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:width="250dp"
+            android:text="Code from the Desktop App"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="@color/white"
+            android:translationY="-50dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:translationY="50dp">
+
+            <LinearLayout
+                android:id="@+id/btn_login_cns"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_item_top"
+                android:gravity="center_vertical"
+                android:onClick="onLoginCnsClick"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="10"
+                    android:fontFamily="sans-serif"
+                    android:text="Login with CNS"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/bg_item_bottom"
+                android:gravity="center_vertical"
+                android:onClick="onScanQrCodeClick"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="10"
+                    android:fontFamily="sans-serif"
+                    android:text="Scan QR Code"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
