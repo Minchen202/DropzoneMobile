@@ -1,56 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app2="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/motion_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:padding="12dp">
-
-    <ImageView
-        android:id="@+id/iv_file_icon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@drawable/ic_file"
-        android:layout_marginEnd="12dp" />
+    android:layout_height="80dp"
+    android:padding="4dp"
+    app:layoutDescription="@xml/item_file_scene">
 
     <LinearLayout
+        android:id="@+id/layout_content"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_file_item"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_file_name"
+        <ImageView
+            android:id="@+id/iv_file_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_image"
+            app2:tint="@color/white" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="filename.txt"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_file_meta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1.2MB • 3 min ago"
-            android:textSize="13sp"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            <TextView
+                android:id="@+id/tv_file_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="CNS Logo.png"
+                android:textColor="@android:color/white"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_file_meta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="1 B • Uploaded 1 day ago • Expir..."
+                android:textColor="#8EFFFFFF"
+                android:textSize="13sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/btn_download"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_download"
-        android:contentDescription="Download" />
+        android:id="@+id/btn_bookmark"
+        android:layout_width="64dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_bookmark_btn"
+        android:padding="18dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_bookmark"
+        app:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/btn_open"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_open"
-        android:visibility="gone"
-        android:contentDescription="Open" />
+        android:id="@+id/btn_download"
+        android:layout_width="72dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_download_btn"
+        android:padding="18dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_download"
+        app:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_bookmark"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>

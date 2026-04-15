@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="#1D1121"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -15,22 +16,26 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#2D2033"
             app:cardElevation="2dp"
-            app:cardCornerRadius="12dp">
+            app:cardCornerRadius="12dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Connected Device"
-                    android:textSize="12sp"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_device_name"
@@ -38,23 +43,116 @@
                     android:layout_height="wrap_content"
                     android:text="Device"
                     android:textSize="22sp"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="● Online"
-                    android:textColor="?attr/colorPrimary" />
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="●"
+                        android:textColor="#AD63C5" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Online"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_device_right"
+                        android:fontFamily="@font/google_sans"
+                        android:gravity="center"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingHorizontal="10dp"
+                        android:includeFontPadding="false"
+                        android:text="Settings"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="@null"
+                        app:icon="@drawable/ic_settings"
+                        app:iconGravity="textStart"
+                        app:iconPadding="5dp"
+                        app:iconTint="@android:color/white" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/google_sans"
+                        android:gravity="center"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingHorizontal="10dp"
+                        android:includeFontPadding="false"
+                        android:text="Devices"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/bg_device_middle"
+                        app:backgroundTint="@null"
+                        app:cornerRadius="18dp"
+                        app:icon="@drawable/ic_devices"
+                        app:iconGravity="textStart"
+                        app:iconPadding="5dp"
+                        app:iconTint="@android:color/white" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_device_left"
+                        android:fontFamily="@font/google_sans"
+                        android:gravity="center"
+                        android:minWidth="0dp"
+                        android:includeFontPadding="false"
+                        android:minHeight="0dp"
+                        android:paddingHorizontal="10dp"
+                        android:text="Notifs"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="@null"
+                        app:icon="@drawable/ic_notifications"
+                        app:iconGravity="textStart"
+                        app:iconPadding="5dp"
+                        app:iconTint="@android:color/white" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/bg_item_bottom" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Files to Sync"
+            android:text="Recently uploaded"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@color/white"
             android:layout_marginBottom="8dp" />
 
         <androidx.recyclerview.widget.RecyclerView

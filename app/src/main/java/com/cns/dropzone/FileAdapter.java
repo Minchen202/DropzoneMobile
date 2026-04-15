@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cns.dropzone.model.FileItem;
@@ -20,11 +21,19 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     private final List<FileItem> files;
     private final Consumer<FileItem> onDownload;
     private final Consumer<FileItem> onOpen;
+    private RecyclerView recyclerView;
+    private int openedPosition = -1;
 
     public FileAdapter(List<FileItem> files, Consumer<FileItem> onDownload, Consumer<FileItem> onOpen) {
         this.files = files;
         this.onDownload = onDownload;
         this.onOpen = onOpen;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
     }
 
     @NonNull
@@ -38,12 +47,45 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     @Override
     public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
         FileItem file = files.get(position);
-        holder.download.setVisibility(file.isDownloaded() ? View.GONE : View.VISIBLE);
-        holder.open.setVisibility(file.isDownloaded() ? View.VISIBLE : View.GONE);
+        
+        // Reset motion layout state for recycled views
+        if (openedPosition == position) {
+            holder.motionLayout.setProgress(1f);
+        } else {
+            holder.motionLayout.setProgress(0f);
+        }
+
         holder.name.setText(file.getName());
         holder.meta.setText(file.getSize() + " • " + file.getLastModified());
+
         holder.download.setOnClickListener(v -> onDownload.accept(file));
-        holder.open.setOnClickListener(v -> onOpen.accept(file));
+        holder.bookmark.setOnClickListener(v -> {
+            // Handle bookmark click
+        });
+
+        holder.motionLayout.setTransitionListener(new MotionLayout.TransitionListener() {
+            @Override
+            public void onTransitionStarted(MotionLayout motionLayout, int startId, int endId) {
+                if (endId == R.id.end) {
+                    closeOthers(holder.getAdapterPosition());
+                }
+            }
+
+            @Override public void onTransitionChange(MotionLayout motionLayout, int startId, int endId, float progress) {}
+            
+            @Override 
+            public void onTransitionCompleted(MotionLayout motionLayout, int currentId) {
+                if (currentId == R.id.end) {
+                    openedPosition = holder.getAdapterPosition();
+                } else if (currentId == R.id.start) {
+                    if (openedPosition == holder.getAdapterPosition()) {
+                        openedPosition = -1;
+                    }
+                }
+            }
+            
+            @Override public void onTransitionTrigger(MotionLayout motionLayout, int triggerId, boolean positive, float progress) {}
+        });
 
         // Icon by extension
         String name = file.getName().toLowerCase();
@@ -62,21 +104,37 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         }
     }
 
+    private void closeOthers(int currentPosition) {
+        if (openedPosition != -1 && openedPosition != currentPosition) {
+            RecyclerView.ViewHolder vh = recyclerView.findViewHolderForAdapterPosition(openedPosition);
+            if (vh instanceof FileViewHolder) {
+                ((FileViewHolder) vh).motionLayout.transitionToStart();
+            } else {
+                // If not visible, just update openedPosition so it binds correctly later
+                int oldPos = openedPosition;
+                openedPosition = -1;
+                notifyItemChanged(oldPos);
+            }
+        }
+    }
+
     @Override
     public int getItemCount() { return files.size(); }
 
     static class FileViewHolder extends RecyclerView.ViewHolder {
+        MotionLayout motionLayout;
         ImageView icon;
         TextView name, meta;
-        ImageButton download, open;
+        ImageButton download, bookmark;
 
         FileViewHolder(@NonNull View itemView) {
             super(itemView);
+            motionLayout = (MotionLayout) itemView;
             icon = itemView.findViewById(R.id.iv_file_icon);
             name = itemView.findViewById(R.id.tv_file_name);
             meta = itemView.findViewById(R.id.tv_file_meta);
-            open = itemView.findViewById(R.id.btn_open);
             download = itemView.findViewById(R.id.btn_download);
+            bookmark = itemView.findViewById(R.id.btn_bookmark);
         }
     }
 }
