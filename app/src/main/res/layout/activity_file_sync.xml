@@ -169,15 +169,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:text="Upload"
+        android:backgroundTint="#E599FE"
         app:icon="@drawable/ic_upload" />
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_reload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="80dp"
-        app:icon="@drawable/ic_refresh" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

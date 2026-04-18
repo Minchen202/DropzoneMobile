@@ -1,100 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center"
+    android:background="#1D1121"
     android:padding="24dp">
 
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Device"
-        android:textSize="24sp"
+        android:layout_width="343dp"
+        android:layout_height="166dp"
+        android:fontFamily="@font/roboto_flex"
+        android:text="Approve device?"
+        android:textColor="@color/white"
+        android:textSize="50dp"
         android:textStyle="bold" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="74dp"
-        android:textAlignment="center"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="32dp"
-        android:text="An new device is trying to connect to your CNS account. If this is not you, please decline and change your password immediately"
-        android:textSize="16sp" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp">
+        android:layout_width="343dp"
+        android:layout_height="192dp"
+        android:fontFamily="@font/roboto_flex"
+        android:text="This device is asking for approval. Approving will give this device acces to your shared files. If you didnt request this, decline and change your CNS password."
+        android:textColor="@color/white"
+        android:textSize="20dp" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="168dp"
-            android:gravity="center"
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:background="@drawable/bg_file_item">
 
-            <TextView
-                android:id="@+id/tv_device_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Device: "
-                android:textSize="20sp"
-                android:textStyle="bold" />
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/google_sans"
+                android:gravity="center"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="Decline"
+                android:layout_margin="15dp"
+                android:textColor="@android:color/black"
+                android:background="@drawable/bg_item_top"
+                app:backgroundTint="@null"
+                app:icon="@drawable/ic_deny"
+                app:iconGravity="textStart"
+                app:iconPadding="5dp"
+                app:iconTint="@android:color/black" />
 
-            <TextView
-                android:id="@+id/tv_device_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Device ID: "
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_key"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Key: "
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_request_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Requested: "
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="5dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/google_sans"
+                android:gravity="center"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="10dp"
+                android:includeFontPadding="false"
+                android:text="Devices"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_item_top"
+                app:backgroundTint="@null"
+                app:icon="@drawable/ic_devices"
+                app:iconGravity="textStart"
+                app:iconPadding="5dp"
+                app:iconTint="@android:color/white" />
 
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="32dp"
-        android:weightSum="2">
-
-        <Button
-            android:id="@+id/btn_cancel"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="Decline" />
-
-        <Button
-            android:id="@+id/btn_confirm"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="Approve" />
-    </LinearLayout>
 
 </LinearLayout>
