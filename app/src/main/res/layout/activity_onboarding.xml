@@ -24,16 +24,16 @@
 
         <TextView
             android:layout_width="494dp"
-            android:layout_height="71dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/roboto_flex"
             android:text="Dropzone"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:textFontWeight="1000"
             android:textSize="60sp"
-            android:textStyle="bold"
-            android:translationY="-50dp" />
+            android:translationY="-50dp"
+            android:includeFontPadding="false"
+            app:fontVariationSettings="'wght' 1000" />
 
         <TextView
             android:layout_width="wrap_content"

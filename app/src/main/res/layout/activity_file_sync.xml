@@ -19,8 +19,8 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="16dp"
             app:cardBackgroundColor="#2D2033"
-            app:cardElevation="2dp"
-            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardCornerRadius="24dp"
             app:strokeWidth="0dp">
 
             <LinearLayout
@@ -57,6 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="●"
+                        android:textSize="18sp"
                         android:textColor="#AD63C5" />
 
                     <TextView
@@ -81,16 +82,20 @@
                         android:background="@drawable/bg_device_right"
                         android:fontFamily="@font/google_sans"
                         android:gravity="center"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        app:iconGravity="textStart"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
                         android:paddingHorizontal="10dp"
                         android:includeFontPadding="false"
                         android:text="Settings"
+                        android:textSize="13sp"
                         android:textAllCaps="false"
                         android:textColor="@android:color/white"
                         app:backgroundTint="@null"
                         app:icon="@drawable/ic_settings"
-                        app:iconGravity="textStart"
+                        app:iconSize="18dp"
                         app:iconPadding="5dp"
                         app:iconTint="@android:color/white" />
 
@@ -101,18 +106,22 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/google_sans"
                         android:gravity="center"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        app:iconGravity="textStart"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
                         android:paddingHorizontal="10dp"
                         android:includeFontPadding="false"
                         android:text="Devices"
+                        android:textSize="13sp"
                         android:textAllCaps="false"
                         android:textColor="@android:color/white"
                         android:background="@drawable/bg_device_middle"
                         app:backgroundTint="@null"
                         app:cornerRadius="18dp"
                         app:icon="@drawable/ic_devices"
-                        app:iconGravity="textStart"
+                        app:iconSize="18dp"
                         app:iconPadding="5dp"
                         app:iconTint="@android:color/white" />
 
@@ -123,16 +132,20 @@
                         android:background="@drawable/bg_device_left"
                         android:fontFamily="@font/google_sans"
                         android:gravity="center"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
+                        app:iconGravity="textStart"
                         android:minWidth="0dp"
-                        android:includeFontPadding="false"
                         android:minHeight="0dp"
+                        android:includeFontPadding="false"
                         android:paddingHorizontal="10dp"
                         android:text="Notifs"
+                        android:textSize="13sp"
                         android:textAllCaps="false"
                         android:textColor="@android:color/white"
                         app:backgroundTint="@null"
                         app:icon="@drawable/ic_notifications"
-                        app:iconGravity="textStart"
+                        app:iconSize="19dp"
                         app:iconPadding="5dp"
                         app:iconTint="@android:color/white" />
 
