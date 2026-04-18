@@ -58,8 +58,8 @@ public class FileSyncActivity extends AppCompatActivity {
     private okhttp3.WebSocket webSocket;
 
     private void connectWebSocket() {
-        String serverUrl = prefs.getString("server_url", "https://shareit.cns-studios.com");
-        String apiKey = prefs.getString("api_key", "9f3b3ecfaac41ae96631972d874fe8dbc08713ea6ce5c98873afcb2205d33403");
+        String serverUrl = prefs.getString("server_url", "");
+        String apiKey = prefs.getString("api_key", "");
 
         String wsUrl = serverUrl.replaceFirst("^http", "ws") + "/api/me/devices/ws";
 
@@ -131,8 +131,8 @@ public class FileSyncActivity extends AppCompatActivity {
     private void loadFiles() {
         new Thread(() -> {
             try {
-                String serverUrl = prefs.getString("server_url", "https://shareit.cns-studios.com");
-                String apiKey = prefs.getString("api_key", "9f3b3ecfaac41ae96631972d874fe8dbc08713ea6ce5c98873afcb2205d33403");
+                String serverUrl = prefs.getString("server_url", "");
+                String apiKey = prefs.getString("api_key", "");
                 File dropZoneDir = new File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     "DropZone"

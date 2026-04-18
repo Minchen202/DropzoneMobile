@@ -24,23 +24,13 @@ public class VerifyNewDeviceActivity extends AppCompatActivity {
             JSONObject json = new JSONObject(device_data);
             String ownerName = json.optString("owner", "Unknown Device");
 
-            String id = json.optString("Device_ID", "Unknown Device ID");
-
-            String key = json.optString("Key", "Unknown Key");
-
             String time = json.optString("Request_time", "Unknown Time");
 
             TextView tvOwner = findViewById(R.id.tv_device_name);
             tvOwner.setText(ownerName);
 
-//            TextView tvId = findViewById(R.id.tv_device_id);
-//            tvId.setText(id);
-//
-//            TextView tvKey = findViewById(R.id.tv_key);
-//            tvKey.setText(key);
-//
-//            TextView tvTime = findViewById(R.id.tv_request_time);
-//            tvTime.setText(time);
+            TextView tvTime = findViewById(R.id.tv_request_time);
+            tvTime.setText(time);
 
             Button btnConfirm = findViewById(R.id.btn_confirm);
             Button btnCancel = findViewById(R.id.btn_cancel);

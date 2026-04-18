@@ -26,50 +26,121 @@
         android:textColor="@color/white"
         android:textSize="20dp" />
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="200dp"
-            android:orientation="vertical"
-            android:background="@drawable/bg_file_item">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_device_name"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/google_sans"
+            android:text="Name"
+            android:textColor="@color/white"
+            android:layout_margin="15dp"
+            android:textFontWeight="500"
+            android:textSize="23dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/google_sans"
-                android:gravity="center"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:text="Decline"
-                android:layout_margin="15dp"
-                android:textColor="@android:color/black"
-                android:background="@drawable/bg_item_top"
-                app:backgroundTint="@null"
-                app:icon="@drawable/ic_deny"
-                app:iconGravity="textStart"
-                app:iconPadding="5dp"
-                app:iconTint="@android:color/black" />
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginHorizontal="5dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/google_sans"
-                android:gravity="center"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:paddingHorizontal="10dp"
-                android:includeFontPadding="false"
-                android:text="Devices"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:background="@drawable/bg_item_top"
-                app:backgroundTint="@null"
-                app:icon="@drawable/ic_devices"
-                app:iconGravity="textStart"
-                app:iconPadding="5dp"
-                app:iconTint="@android:color/white" />
+        <TextView
+            android:id="@+id/tv_device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:fontFamily="@font/google_sans_flex"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_device_time"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="30dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/google_sans"
+            android:text="Time"
+            android:textColor="@color/white"
+            android:layout_margin="15dp"
+            android:textSize="23dp"
+            android:textFontWeight="500" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tv_request_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:fontFamily="@font/google_sans_flex"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_file_item">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/google_sans_flex"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="Decline"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/bg_item_top"
+            app:backgroundTint="@null"
+            app:icon="@drawable/ic_deny"
+            app:iconGravity="textStart"
+            app:iconPadding="5dp"
+            app:iconSize="25sp"
+            app:iconTint="@android:color/black" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/google_sans_flex"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="Approve"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginBottom="15dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_item_bottom_disabled"
+            app:backgroundTint="@null"
+            app:icon="@drawable/ic_check"
+            app:iconGravity="textStart"
+            app:iconPadding="5dp"
+            app:iconSize="25sp"
+            app:iconTint="@android:color/white" />
 
         </LinearLayout>
 

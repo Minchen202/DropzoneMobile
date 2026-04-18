@@ -3,17 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Transition
+        android:id="@+id/transition_main"
         app:constraintSetEnd="@+id/end"
         app:constraintSetStart="@+id/start"
-        app:duration="250">
+        app:duration="200">
+        <OnSwipe
+            app:touchAnchorId="@+id/layout_content"
+            app:touchAnchorSide="right"
+            app:dragDirection="dragLeft"
+            app:onTouchUp="stop" />
         <OnClick
             app:clickAction="toggle"
             app:targetId="@+id/layout_content" />
-        <OnSwipe
-            app:dragDirection="dragLeft"
-            app:touchAnchorId="@+id/layout_content"
-            app:touchAnchorSide="right"
-            app:touchRegionId="@+id/layout_content" />
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
