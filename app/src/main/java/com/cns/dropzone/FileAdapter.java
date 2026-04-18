@@ -66,8 +66,15 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         holder.motionLayout.setTransitionListener(new MotionLayout.TransitionListener() {
             @Override
             public void onTransitionStarted(MotionLayout motionLayout, int startId, int endId) {
+                int position = holder.getBindingAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) return;
+
                 if (endId == R.id.end) {
-                    closeOthers(holder.getAdapterPosition());
+                    int oldPos = openedPosition;
+                    openedPosition = position;
+                    if (oldPos != -1 && oldPos != position) {
+                        closePosition(oldPos);
+                    }
                 }
             }
 
@@ -75,12 +82,13 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             
             @Override 
             public void onTransitionCompleted(MotionLayout motionLayout, int currentId) {
-                if (currentId == R.id.end) {
-                    openedPosition = holder.getAdapterPosition();
-                } else if (currentId == R.id.start) {
-                    if (openedPosition == holder.getAdapterPosition()) {
-                        openedPosition = -1;
-                    }
+                int position = holder.getBindingAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) return;
+
+                if (currentId == R.id.start && openedPosition == position) {
+                    openedPosition = -1;
+                } else if (currentId == R.id.end) {
+                    openedPosition = position;
                 }
             }
             
@@ -104,17 +112,13 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         }
     }
 
-    private void closeOthers(int currentPosition) {
-        if (openedPosition != -1 && openedPosition != currentPosition) {
-            RecyclerView.ViewHolder vh = recyclerView.findViewHolderForAdapterPosition(openedPosition);
-            if (vh instanceof FileViewHolder) {
-                ((FileViewHolder) vh).motionLayout.transitionToStart();
-            } else {
-                // If not visible, just update openedPosition so it binds correctly later
-                int oldPos = openedPosition;
-                openedPosition = -1;
-                notifyItemChanged(oldPos);
-            }
+    private void closePosition(int pos) {
+        if (pos == -1) return;
+        RecyclerView.ViewHolder vh = recyclerView.findViewHolderForAdapterPosition(pos);
+        if (vh instanceof FileViewHolder) {
+            ((FileViewHolder) vh).motionLayout.transitionToStart();
+        } else {
+            notifyItemChanged(pos);
         }
     }
 
@@ -123,6 +127,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     static class FileViewHolder extends RecyclerView.ViewHolder {
         MotionLayout motionLayout;
+        View layoutContent;
         ImageView icon;
         TextView name, meta;
         ImageButton download, bookmark;
@@ -130,6 +135,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         FileViewHolder(@NonNull View itemView) {
             super(itemView);
             motionLayout = (MotionLayout) itemView;
+            layoutContent = itemView.findViewById(R.id.layout_content);
             icon = itemView.findViewById(R.id.iv_file_icon);
             name = itemView.findViewById(R.id.tv_file_name);
             meta = itemView.findViewById(R.id.tv_file_meta);

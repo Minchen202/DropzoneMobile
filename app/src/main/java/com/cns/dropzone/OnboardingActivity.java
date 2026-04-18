@@ -29,7 +29,8 @@ public class OnboardingActivity extends AppCompatActivity {
     }
 
     public void onLoginCnsClick(android.view.View view) {
-
+        Intent intent = new Intent(this, FileSyncActivity.class);
+        startActivity(intent);
     }
 
     public void onScanQrCodeClick(android.view.View view) {

@@ -4,8 +4,10 @@
     xmlns:app2="http://schemas.android.com/apk/res-auto"
     android:id="@+id/motion_layout"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:padding="4dp"
+    android:layout_height="88dp"
+    android:paddingBottom="8dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     app:layoutDescription="@xml/item_file_scene">
 
     <LinearLayout

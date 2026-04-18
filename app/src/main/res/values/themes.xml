@@ -1,4 +1,8 @@
 <resources>
     <style name="Theme.Dropping" parent="Theme.Material3.DayNight.NoActionBar">
     </style>
+    <style name="ShapeAppearance.FAB.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

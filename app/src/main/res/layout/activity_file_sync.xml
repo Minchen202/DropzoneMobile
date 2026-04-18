@@ -181,8 +181,23 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+        android:textColor="#FF000000"
         android:text="Upload"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.FAB.Rounded"
         android:backgroundTint="#E599FE"
-        app:icon="@drawable/ic_upload" />
+        app:icon="@drawable/ic_upload"
+        app:iconTint="#FF000000"
+        app:iconSize="20dp" />
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        android:textColor="#FF000000"
+        android:text="TEMPBUTTONG"
+        android:backgroundTint="#E599FE"
+        app:iconTint="#FF000000"
+        app:iconSize="20dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
