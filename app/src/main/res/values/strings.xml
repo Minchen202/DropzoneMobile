@@ -3,4 +3,9 @@
     <string name="overlay_close">Close overlay</string>
     <string name="overlay_downloading">Downloading</string>
     <string name="overlay_percent_default">0%</string>
+    <string name="device_approval_desc">This device has to be approved from another trusted device. <a href="https://shareit.cns-studios.com/">Why?</a></string>
+    <string name="recover_device_title">Recover device?</string>
+    <string name="recover_device_desc">This device will become the only trusted device. Previously uploaded files are permanently lost.</string>
+    <string name="cancel">Cancel</string>
+    <string name="recover">Recover</string>
 </resources>

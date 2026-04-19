@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#1D1121">
+
+    <TextView
+        android:layout_width="343dp"
+        android:layout_height="166dp"
+        android:fontFamily="@font/roboto_flex"
+        android:text="Waiting for approval"
+        android:textColor="@color/white"
+        android:textSize="50dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/approval_desc_text"
+        android:layout_width="343dp"
+        android:layout_height="72dp"
+        android:fontFamily="@font/roboto_flex"
+        android:linksClickable="true"
+        android:text="@string/device_approval_desc"
+        android:textColor="@color/white"
+        android:textColorLink="#AD63C5"
+        android:textSize="20dp" />
+
+
+    <com.google.android.material.loadingindicator.LoadingIndicator
+        style="@style/Widget.Material3.LoadingIndicator.Contained"
+        android:layout_width="wrap_content"
+        app:containerWidth="100dp"
+        app:containerHeight="100dp"
+        app:containerColor="#AD63C5"
+        app:indicatorColor="#762C8E"
+        app:indicatorSize="80dp"
+        android:layout_margin="20dp"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginHorizontal="30dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_file_item">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/google_sans_flex"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="Recover this device"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_item_top_disabled"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/google_sans_flex"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="Continue"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginBottom="15dp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/bg_item_bottom"
+            app:backgroundTint="@null"
+            app:icon="@drawable/ic_check"
+            app:iconGravity="textStart"
+            app:iconPadding="5dp"
+            app:iconSize="25sp"
+            app:iconTint="@android:color/black" />
+
+    </LinearLayout>
+
+</LinearLayout>

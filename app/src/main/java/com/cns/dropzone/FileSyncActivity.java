@@ -121,6 +121,13 @@ public class FileSyncActivity extends AppCompatActivity {
         ExtendedFloatingActionButton fab = findViewById(R.id.fab_upload);
         fab.setOnClickListener(v -> filePickerLauncher.launch(new String[]{"*/*"}));
 
+        ExtendedFloatingActionButton tempFab = findViewById(R.id.temp);
+        tempFab.setOnClickListener(v -> {
+            setContentView(R.layout.activity_waiting_approval);
+            TextView approvalDescText = findViewById(R.id.approval_desc_text);
+            approvalDescText.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+        });
+
         loadFiles();
     }
 
