@@ -31,11 +31,11 @@
     <com.google.android.material.loadingindicator.LoadingIndicator
         style="@style/Widget.Material3.LoadingIndicator.Contained"
         android:layout_width="wrap_content"
-        app:containerWidth="100dp"
-        app:containerHeight="100dp"
+        app:containerWidth="80dp"
+        app:containerHeight="80dp"
         app:containerColor="#AD63C5"
         app:indicatorColor="#762C8E"
-        app:indicatorSize="80dp"
+        app:indicatorSize="60dp"
         android:layout_margin="20dp"
         android:layout_height="wrap_content"/>
 

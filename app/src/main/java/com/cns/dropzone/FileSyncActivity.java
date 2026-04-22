@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public class FileSyncActivity extends AppCompatActivity {
     private final List<FileItem> fileList = new ArrayList<>();
 
     private OkHttpClient wsClient;
+    private String accessToken = "";
     private okhttp3.WebSocket webSocket;
 
     private void connectWebSocket() {
@@ -105,7 +107,26 @@ public class FileSyncActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("Login", MODE_PRIVATE);
 
-        connectWebSocket();
+        //connectWebSocket();
+
+        try {
+            androidx.security.crypto.MasterKey masterKey = new androidx.security.crypto.MasterKey.Builder(this)
+                    .setKeyScheme(androidx.security.crypto.MasterKey.KeyScheme.AES256_GCM)
+                    .build();
+
+            SharedPreferences encryptedPrefs = androidx.security.crypto.EncryptedSharedPreferences.create(
+                    this,
+                    "TokenPrefs",
+                    masterKey,
+                    androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+
+            accessToken = encryptedPrefs.getString("access_token", "");
+        } catch (GeneralSecurityException | IOException e) {
+            Log.e(TAG, "Error initializing encrypted preferences", e);
+        }
+
 
         // Device name header
         TextView deviceName = findViewById(R.id.tv_device_name);
@@ -138,18 +159,18 @@ public class FileSyncActivity extends AppCompatActivity {
     private void loadFiles() {
         new Thread(() -> {
             try {
-                String serverUrl = prefs.getString("server_url", "");
-                String apiKey = prefs.getString("api_key", "");
+                String serverUrl = prefs.getString("server_url", "https://shareit.cns-studios.com");
+
                 File dropZoneDir = new File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     "DropZone"
                 );
                 String[] localFileNames = dropZoneDir.exists() ? dropZoneDir.list() : new String[0];
 
-                URL url = new URL(serverUrl + "/desktop/files");
+                URL url = new URL(serverUrl + "/android/files");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("X-API-KEY", apiKey);
+                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
 
                 if (conn.getResponseCode() == 200) {
                     String body = readResponseBody(conn);
@@ -159,33 +180,41 @@ public class FileSyncActivity extends AppCompatActivity {
                         JSONObject obj = arr.getJSONObject(i);
                         if (Arrays.stream(localFileNames).anyMatch(name -> {
                             try {
-                                return name.equals(obj.getString("file_name"));
+                                return name.equals(obj.getString("filename"));
                             } catch (JSONException e) {
                                 throw new RuntimeException(e);
                             }
                         })) {
                             items.add(new FileItem(
-                                    obj.getString("file_name"),
-                                    formatSize(obj.getLong("file_size")),
-                                    timeAgo(obj.getString("uploaded_at")),
-                                    obj.getString("id"),
+                                    obj.getString("filename"),
+                                    formatSize(obj.getLong("size_bytes")),
+                                    timeAgo(obj.getString("created_at")),
+                                    obj.getString("file_id"),
                                     true
                             ));
                         } else {
                             items.add(new FileItem(
-                                    obj.getString("file_name"),
-                                    formatSize(obj.getLong("file_size")),
-                                    timeAgo(obj.getString("uploaded_at")),
-                                    obj.getString("id"),
+                                    obj.getString("filename"),
+                                    formatSize(obj.getLong("size_bytes")),
+                                    timeAgo(obj.getString("created_at")),
+                                    obj.getString("file_id"),
                                     false
                             ));
                         }
                     }
+
                     runOnUiThread(() -> {
                         fileList.clear();
                         fileList.addAll(items);
                         adapter.notifyDataSetChanged();
                     });
+                } else if (conn.getResponseCode() == 401) {
+                    runOnUiThread(() -> Toast.makeText(this, "Session expired. Refreshing token...", Toast.LENGTH_SHORT).show());
+                    Log.e(TAG, "Unauthorized. Attempting to refresh token.");
+                    refreshToken();
+                    
+                } else {
+                    Log.e(TAG, "Failed to load files. Server responded with code: " + conn.getResponseCode());
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Load files error", e);
@@ -259,10 +288,10 @@ public class FileSyncActivity extends AppCompatActivity {
                 String apiKey = prefs.getString("api_key", "");
 
                 // Init upload
-                URL initUrl = new URL(serverUrl + "/desktop/upload/init");
+                URL initUrl = new URL(serverUrl + "/android/upload/init");
                 HttpURLConnection initConn = (HttpURLConnection) initUrl.openConnection();
                 initConn.setRequestMethod("POST");
-                initConn.setRequestProperty("X-API-KEY", apiKey);
+                initConn.setRequestProperty("Authorization", "Bearer " + accessToken);
                 initConn.setRequestProperty("Content-Type", "application/json");
                 initConn.setDoOutput(true);
 
@@ -299,14 +328,16 @@ public class FileSyncActivity extends AppCompatActivity {
                                 .build();
 
                         Request request = new Request.Builder()
-                                .url(serverUrl + "/desktop/upload/chunk")
+                                .url(serverUrl + "/android/upload/chunk")
                                 .post(requestBody)
-                                .addHeader("X-API-KEY", apiKey)
+                                .addHeader("Authorization", "Bearer " + accessToken)
                                 .build();
 
                         try (Response response = client.newCall(request).execute()) {
                             if (!response.isSuccessful()) {
                                 Log.e(TAG, "Chunk " + chunkIndex + " failed");
+                            } else {
+                                Log.i(TAG, "Chunk " + chunkIndex + " uploaded successfully");
                             }
                         }
                         OverlayService.setProgress((float) (chunkIndex + 1) / totalChunks);
@@ -343,9 +374,9 @@ public class FileSyncActivity extends AppCompatActivity {
     }
 
     private void downloadFile(FileItem file) {
-        String serverUrl = prefs.getString("server_url", "");
+        String serverUrl = prefs.getString("server_url", "https://shareit.cns-studios.com");
         String apiKey = prefs.getString("api_key", "");
-        String downloadUrl = serverUrl + "/desktop/files/" + file.getId() + "/download";
+        String downloadUrl = serverUrl + "/android/files/" + file.getId() + "/download";
 
         Log.i("Download", "Starting download: " + file.getName() + " from " + downloadUrl + " with API key ");
 
@@ -357,7 +388,10 @@ public class FileSyncActivity extends AppCompatActivity {
                 URL url = new URL(downloadUrl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("X-API-KEY", apiKey);
+                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                conn.setRequestProperty("Content-Type", "application/octet-stream");
+                conn.setRequestProperty("Content-Disposition", "attachment; filename=" + file.getId() + ".enc");
+                conn.setRequestProperty("X-Original-Filename", file.getName());
 
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     Log.i("Download", "HTTP connection established, starting to read file stream");
@@ -457,6 +491,45 @@ public class FileSyncActivity extends AppCompatActivity {
         if (webSocket != null) webSocket.close(1000, "Activity destroyed");
         if (wsClient != null) wsClient.dispatcher().executorService().shutdown();
         super.onDestroy();
+    }
+
+    public void refreshToken() throws IOException, JSONException {
+        URL url = new URL("https://auth.cns-studios.com/v2/token");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("Post");
+
+        String refresh = null;
+        try {
+            androidx.security.crypto.MasterKey masterKey = new androidx.security.crypto.MasterKey.Builder(this)
+                    .setKeyScheme(androidx.security.crypto.MasterKey.KeyScheme.AES256_GCM)
+                    .build();
+
+            SharedPreferences encryptedPrefs = androidx.security.crypto.EncryptedSharedPreferences.create(
+                    this,
+                    "TokenPrefs",
+                    masterKey,
+                    androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+
+            refresh = encryptedPrefs.getString("refresh_token", "");
+        } catch (GeneralSecurityException | IOException e) {
+            Log.e(TAG, "Error initializing encrypted preferences", e);
+        }
+
+        JSONObject Body = new JSONObject();
+        Body.put("grant_type", "refresh_token");
+        Body.put("refresh_token", refresh);
+        Body.put("client_id", "shareit_android");
+        conn.getOutputStream().write(Body.toString().getBytes());
+
+        Log.e("FileSyncActivity", "Token refresh response code: " + Body.toString());
+        Log.e("FileSyncActivity", "Token refresh response code: " + conn.getResponseCode());
+        Log.e("FileSyncActivity", "Token refresh response body: " + readResponseBody(conn));
+
+        if (conn.getResponseCode() == 200) {
+
+        }
     }
 
 
