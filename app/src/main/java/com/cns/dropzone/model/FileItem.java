@@ -6,7 +6,7 @@ public class FileItem {
     private final String lastModified;
     private final String id;
 
-    private final Boolean downloaded;
+    private boolean downloaded;
 
     public FileItem(String name, String size, String lastModified, String id, boolean downloaded) {
         this.name = name;
@@ -20,5 +20,6 @@ public class FileItem {
     public String getSize() { return size; }
     public String getLastModified() { return lastModified; }
     public String getId() { return id; }
-    public Boolean isDownloaded() { return downloaded; }
+    public boolean isDownloaded() { return downloaded; }
+    public void setDownloaded(boolean downloaded) { this.downloaded = downloaded; }
 }

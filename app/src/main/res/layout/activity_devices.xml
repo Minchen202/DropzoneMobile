@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="top"
+    android:background="#1D1121"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp">
+
+        <ImageButton
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@null"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Devices"
+            android:textColor="@color/white"
+            android:fontFamily="@font/google_sans"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_notifs_top"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This device"
+            android:textColor="@color/white"
+            android:fontFamily="@font/google_sans"
+            android:textSize="20sp"
+            android:layout_margin="15dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aarons Dropzone Mobile"
+            android:textColor="@color/white"
+            android:fontFamily="@font/google_sans"
+            android:textSize="15sp"
+            android:layout_marginHorizontal="15dp"
+            android:drawableEnd="@drawable/ic_phone"
+            android:layout_marginBottom="20dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_notifs_bottom"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Others"
+            android:textColor="@color/white"
+            android:fontFamily="@font/google_sans"
+            android:textSize="20sp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="15dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aarons Dropzone"
+            android:textColor="@color/white"
+            android:fontFamily="@font/google_sans"
+            android:textSize="15sp"
+            android:layout_marginHorizontal="15dp"
+            android:drawableEnd="@drawable/ic_phone"/>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="5dp"
+            android:backgroundTint="#BF3C3C"
+            android:fontFamily="@font/google_sans"
+            android:text="Kick"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aarons Dropzone"
+            android:textColor="@color/white"
+            android:fontFamily="@font/google_sans"
+            android:layout_marginTop="10dp"
+            android:textSize="15sp"
+            android:layout_marginHorizontal="15dp"
+            android:drawableEnd="@drawable/ic_pc"/>
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_margin="15dp"
+            android:backgroundTint="#BF3C3C"
+            android:fontFamily="@font/google_sans"
+            android:text="Kick"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</LinearLayout>

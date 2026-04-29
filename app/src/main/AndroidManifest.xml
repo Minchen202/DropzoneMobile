@@ -47,6 +47,9 @@
 
         <activity android:name=".FileSyncActivity" />
         <activity android:name=".VerifyDeviceActivity" />
+        <activity
+            android:name=".approvalActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

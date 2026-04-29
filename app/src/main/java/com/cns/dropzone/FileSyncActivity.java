@@ -3,6 +3,7 @@ package com.cns.dropzone;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +20,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
 
 import com.cns.dropzone.model.FileItem;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -35,11 +38,15 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -144,14 +151,13 @@ public class FileSyncActivity extends AppCompatActivity {
 
         ExtendedFloatingActionButton tempFab = findViewById(R.id.temp);
         tempFab.setOnClickListener(v -> {
-            setContentView(R.layout.activity_waiting_approval);
-            TextView approvalDescText = findViewById(R.id.approval_desc_text);
-            approvalDescText.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+//            setContentView(R.layout.activity_waiting_approval);
+//            TextView approvalDescText = findViewById(R.id.approval_desc_text);
+//            approvalDescText.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
         });
 
         loadFiles();
     }
-
     private void refreshFiles() {
         loadFiles();
     }
@@ -211,8 +217,7 @@ public class FileSyncActivity extends AppCompatActivity {
                 } else if (conn.getResponseCode() == 401) {
                     runOnUiThread(() -> Toast.makeText(this, "Session expired. Refreshing token...", Toast.LENGTH_SHORT).show());
                     Log.e(TAG, "Unauthorized. Attempting to refresh token.");
-                    refreshToken();
-                    
+                    refreshToken.refreshAccessToken(this);
                 } else {
                     Log.e(TAG, "Failed to load files. Server responded with code: " + conn.getResponseCode());
                 }
@@ -460,6 +465,7 @@ public class FileSyncActivity extends AppCompatActivity {
                         Toast.makeText(this, "Download error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
         }).start();
+        fetch_envelope(file.getId());
     }
 
     private void startTransferOverlayService(String type) {
@@ -493,45 +499,6 @@ public class FileSyncActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void refreshToken() throws IOException, JSONException {
-        URL url = new URL("https://auth.cns-studios.com/v2/token");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("Post");
-
-        String refresh = null;
-        try {
-            androidx.security.crypto.MasterKey masterKey = new androidx.security.crypto.MasterKey.Builder(this)
-                    .setKeyScheme(androidx.security.crypto.MasterKey.KeyScheme.AES256_GCM)
-                    .build();
-
-            SharedPreferences encryptedPrefs = androidx.security.crypto.EncryptedSharedPreferences.create(
-                    this,
-                    "TokenPrefs",
-                    masterKey,
-                    androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
-
-            refresh = encryptedPrefs.getString("refresh_token", "");
-        } catch (GeneralSecurityException | IOException e) {
-            Log.e(TAG, "Error initializing encrypted preferences", e);
-        }
-
-        JSONObject Body = new JSONObject();
-        Body.put("grant_type", "refresh_token");
-        Body.put("refresh_token", refresh);
-        Body.put("client_id", "shareit_android");
-        conn.getOutputStream().write(Body.toString().getBytes());
-
-        Log.e("FileSyncActivity", "Token refresh response code: " + Body.toString());
-        Log.e("FileSyncActivity", "Token refresh response code: " + conn.getResponseCode());
-        Log.e("FileSyncActivity", "Token refresh response body: " + readResponseBody(conn));
-
-        if (conn.getResponseCode() == 200) {
-
-        }
-    }
-
 
     public static String timeAgo(String timestamp) {
         long time = Instant.parse(timestamp).toEpochMilli();
@@ -541,5 +508,36 @@ public class FileSyncActivity extends AppCompatActivity {
         if (diff < 3600) return (diff / 60) + " min ago";
         if (diff < 86400) return (diff / 3600) + "h ago";
         return (diff / 86400) + "d ago";
+    }
+
+    private void fetch_envelope(String fileid) {
+        new Thread(() -> {
+            try {
+                String serverUrl = prefs.getString("server_url", "https://auth.cns-studios.com");
+
+                URL url = new URL(serverUrl + "/android/me/files"+ fileid + "/access?device_id=");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                Log.e(TAG, "Access token for DEK: " + accessToken);
+                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                conn.setDoOutput(true);
+
+                if (conn.getResponseCode() == 200) {
+                    String responseBody = readResponseBody(conn);
+                    Log.i("FileSyncActivity", "Token exchange response code: " + responseBody);
+                    JSONObject json = new JSONObject(responseBody);
+
+                } else if (conn.getResponseCode() == 401) {
+                    refreshToken.refreshAccessToken(this);
+                } else {
+                    Log.e(TAG, " Get DEK failed. Server responded with code: " + conn.getResponseCode());
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "Get DEK failed", Toast.LENGTH_LONG).show();
+                    });
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Get DEK error", e);
+            }
+        }).start();
     }
 }
