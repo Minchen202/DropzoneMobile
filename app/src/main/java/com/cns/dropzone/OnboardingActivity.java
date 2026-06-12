@@ -45,7 +45,6 @@ import javax.crypto.Cipher;
 public class OnboardingActivity extends AppCompatActivity {
     private static final String TAG = "OnboardingActivity";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,6 +131,7 @@ public class OnboardingActivity extends AppCompatActivity {
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                             conn.setRequestMethod("POST");
                             conn.setRequestProperty("Content-Type", "application/json");
+                            conn.setDoOutput(true);
 
                             JSONObject body = new JSONObject();
                             body.put("grant_type", "authorization_code");
@@ -151,7 +151,7 @@ public class OnboardingActivity extends AppCompatActivity {
                                     result.write(buffer, 0, length);
                                 }
                                 JSONObject response = new JSONObject(result.toString(StandardCharsets.UTF_8.name()));
-
+                                String refreshedToken = response.optString("refresh_token", "");
                                 MasterKey masterKey = new MasterKey.Builder(OnboardingActivity.this)
                                         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                                         .build();
@@ -167,8 +167,22 @@ public class OnboardingActivity extends AppCompatActivity {
                                 encryptedPrefs.edit()
                                         .putString("access_token", response.optString("access_token"))
                                         .putString("refresh_token", response.optString("refresh_token"))
-                                        .apply();
+                                        .commit();
+
+                                runOnUiThread(() -> {
+                                    startActivity(new Intent(this, approvalActivity.class));
+                                });
+
+                                refreshToken(refreshedToken);
                             } else {
+                                InputStream inputStream = conn.getInputStream();
+                                ByteArrayOutputStream result = new ByteArrayOutputStream();
+                                byte[] buffer = new byte[1024];
+                                int length;
+                                while ((length = inputStream.read(buffer)) != -1) {
+                                    result.write(buffer, 0, length);
+                                }
+                                JSONObject response = new JSONObject(result.toString(StandardCharsets.UTF_8.name()));
                                 Log.e("OnboardingActivity", "Token exchange failed with code: " + conn.getResponseCode());
                             }
 
@@ -176,13 +190,6 @@ public class OnboardingActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }).start();
-                    try {
-                        registerDevice();
-                    } catch (NoSuchAlgorithmException e) {
-                        throw new RuntimeException(e);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
                 } else {
                     Log.e("OnboardingActivity", "State mismatch: expected " + state + " but got " + state_output);
                 }
@@ -193,128 +200,14 @@ public class OnboardingActivity extends AppCompatActivity {
         //startActivity(new Intent(this, FileSyncActivity.class));
     }
 
-    private void registerDevice() throws NoSuchAlgorithmException, JSONException {
-        String device_id = UUID.randomUUID().toString();
-        String device_name = Build.MODEL;
-        PublicKey public_key_raw = rsaOaep();
-        java.security.interfaces.RSAPublicKey rsaPublicKey = (java.security.interfaces.RSAPublicKey) public_key_raw;
-        JSONObject public_key_jwk = new JSONObject();
-        public_key_jwk.put("kty", "RSA");
-        public_key_jwk.put("alg", "RSA-OAEP-256");
-        public_key_jwk.put("use", "enc");
-        public_key_jwk.put("n", Base64.getUrlEncoder().withoutPadding().encodeToString(rsaPublicKey.getModulus().toByteArray()));
-        public_key_jwk.put("e", Base64.getUrlEncoder().withoutPadding().encodeToString(rsaPublicKey.getPublicExponent().toByteArray()));
-        byte[] userKeyRaw = new byte[32];
-        new SecureRandom().nextBytes(userKeyRaw);
-        String wrappedUserKey = "";
-         try {
-             wrappedUserKey = wrapUserKeyForDevice(userKeyRaw, public_key_raw);
-         } catch (Exception e) {
-             Log.e(TAG, "Error wrapping user key", e);
-             runOnUiThread(() -> {
-                 Toast.makeText(this, "Device registration failed: Key wrapping error", Toast.LENGTH_LONG).show();
-             });
-             return;
-         }
-
-         Log.e(TAG, "Wrapped user key: " + wrappedUserKey);
-
-        JSONObject uk_wrap_meta = new JSONObject();
-        uk_wrap_meta.put("type", "self-wrap");
-        uk_wrap_meta.put("device_id", device_id);
-        String finalWrappedUserKey = wrappedUserKey;
-        new Thread(() -> {
-            try {
-                String serverUrl = "https://shareit.cns-studios.com";
-                URL url = new URL(serverUrl + "/android/me/devices/register");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-                conn.setDoOutput(true);
-
-                JSONObject Body = new JSONObject();
-                Body.put("device_id", device_id);
-                Body.put("device_label", device_name);
-                Body.put("public_key_jwk", public_key_jwk);
-                Body.put("key_algorithm","RSA-OAEP-2048");
-                Body.put("key_version", 1);
-                Body.put("wrapped_user_key_b64", finalWrappedUserKey.toString());
-                Body.put("uk_wrap_alg", "RSA-OAEP-2048-v1");
-                Body.put("uk_wrap_meta", uk_wrap_meta);
-
-                Log.e(TAG, "Device registration body: " + Body.toString());
-
-                conn.getOutputStream().write(Body.toString().getBytes());
-
-                if (conn.getResponseCode() == 200) {
-                    String responseBody = readResponseBody(conn);
-                    JSONObject json = new JSONObject(responseBody);
-                    Log.i(TAG, "Device registration response: " + responseBody);
-                    if (json.getBoolean("needs_enrollment")) {
-                        getSharedPreferences("Reg", MODE_PRIVATE).edit()
-                                .putBoolean("waiting_for_enrollment", true)
-                                .putString("device_id", json.getString("device_id"))
-                                .apply();
-                        startActivity(new Intent(this, approvalActivity.class));
-                        finish();
-                    } else {
-                        runOnUiThread(() -> {
-                            Toast.makeText(this, "Device registration failed: " + json.optString("message", "Unknown error"), Toast.LENGTH_LONG).show();
-                        });
-                    }
-
-                    runOnUiThread(() -> {
-                        Toast.makeText(this, "Device registered successfully", Toast.LENGTH_LONG).show();
-                    });
-                } else if (conn.getResponseCode() == 401) {
-                    refreshToken();
-                } else {
-                    Log.e(TAG, "Device registration failed with code: " + conn.getResponseCode());
-                    runOnUiThread(() -> {
-                        Toast.makeText(this, "Get DEK failed", Toast.LENGTH_LONG).show();
-                    });
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Device registration error", e);
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Device registration failed", Toast.LENGTH_LONG).show();
-                });
-            }
-        }).start();
-    }
-
-    public static String wrapUserKeyForDevice(byte[] authUserKeyRaw, PublicKey devicePublicKey) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-        cipher.init(Cipher.WRAP_MODE, devicePublicKey);
-
-        javax.crypto.spec.SecretKeySpec secretKey = new javax.crypto.spec.SecretKeySpec(authUserKeyRaw, "AES");
-        byte[] wrappedKey = cipher.wrap(secretKey);
-
-        return Base64.getEncoder().encodeToString(wrappedKey);
-    }
-
-    private void refreshToken() {
+    private void refreshToken(String refreshToken) {
         new Thread(() -> {
             try {
                 String serverUrl = "https://auth.cns-studios.com";
 
-                String refreshToken = "";
-                try {
-                    MasterKey masterKey = new MasterKey.Builder(this)
-                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                            .build();
-
-                    SharedPreferences encryptedPrefs = EncryptedSharedPreferences.create(
-                            this,
-                            "TokenPrefs",
-                            masterKey,
-                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                    );
-
-                    refreshToken = encryptedPrefs.getString("refresh_token", "");
-                } catch (GeneralSecurityException | IOException e) {
-                    Log.e("Onboarding", "Error initializing encrypted preferences", e);
+                if (refreshToken == null || refreshToken.isEmpty()) {
+                    Log.e(TAG, "Skipping refresh token call because no refresh token was provided.");
+                    return;
                 }
 
                 URL url = new URL(serverUrl + "/v2/token/refresh");
@@ -328,10 +221,8 @@ public class OnboardingActivity extends AppCompatActivity {
                 body.put("client_id", "shareit_android");
                 conn.getOutputStream().write(body.toString().getBytes());
 
-
                 if (conn.getResponseCode() == 200) {
                     String responseBody = readResponseBody(conn);
-                    Log.e(TAG, "Token exchange response code: " + responseBody);
                     JSONObject json = new JSONObject(responseBody);
                     String newAccessToken = json.getString("access_token");
 
@@ -347,7 +238,7 @@ public class OnboardingActivity extends AppCompatActivity {
                             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                     );
 
-                    encryptedPrefs.edit().putString("access_token", newAccessToken).apply();
+                    encryptedPrefs.edit().putString("access_token", newAccessToken).commit();
                     accessToken = newAccessToken;
 
                     runOnUiThread(() -> {
@@ -367,7 +258,7 @@ public class OnboardingActivity extends AppCompatActivity {
                             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                     );
 
-                    encryptedPrefs.edit().putString("refresh_token", "").apply();
+                    encryptedPrefs.edit().putString("refresh_token", "").commit();
                     runOnUiThread(() -> {
                         Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_LONG).show();
                     });
@@ -390,36 +281,7 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
-    public PublicKey rsaOaep() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
 
-        keyPairGen.initialize(2048);
-
-        KeyPair pair = keyPairGen.generateKeyPair();
-
-        try {
-            MasterKey masterKey = new MasterKey.Builder(this)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build();
-
-            SharedPreferences encryptedPrefs = EncryptedSharedPreferences.create(
-                    this,
-                    "KeyPrefs",
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
-
-            encryptedPrefs.edit()
-                    .putString("public_key", android.util.Base64.encodeToString(pair.getPublic().getEncoded(), android.util.Base64.DEFAULT))
-                    .putString("private_key", android.util.Base64.encodeToString(pair.getPrivate().getEncoded(), android.util.Base64.DEFAULT))
-                    .apply();
-        } catch (GeneralSecurityException | IOException e) {
-            Log.e(TAG, "Error storing keys in encrypted preferences", e);
-        }
-
-        return pair.getPublic();
-    }
 
     public byte[] getHash(String password) {
         MessageDigest digest=null;

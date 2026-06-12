@@ -15,10 +15,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import android.os.Handler;
+import android.os.Looper;
 
 public class refreshToken {
     private static final String TAG = "refreshToken";
-    static String serverUrl = "https://auth.cns-studios.com";
+    static String serverUrl = "https://auth.cns-styudios.com";
 
     public static void refreshAccessToken(Context context) {
         new Thread(() -> {
@@ -77,6 +79,91 @@ public class refreshToken {
                     );
 
                     encryptedPrefs.edit().putString("access_token", newAccessToken).apply();
+                    // No callback in this variant
+                } else {
+                    Log.e(TAG, "Failed to refresh token. Server responded with code: " + conn.getResponseCode());
+                    MasterKey masterKey = new MasterKey.Builder(context)
+                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                            .build();
+
+                    SharedPreferences encryptedPrefs = EncryptedSharedPreferences.create(
+                            context,
+                            "TokenPrefs",
+                            masterKey,
+                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                    );
+
+                    encryptedPrefs.edit().putString("refresh_token", "").apply();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Refresh token error", e);
+            }
+        }).start();
+    }
+
+    // Overload that accepts a callback to be executed on the main thread after a successful refresh.
+    public static void refreshAccessToken(Context context, Runnable onSuccess) {
+        new Thread(() -> {
+            try {
+                String serverUrl = "https://auth.cns-studios.com";
+
+                String refreshToken = "";
+                try {
+                    MasterKey masterKey = new MasterKey.Builder(context)
+                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                            .build();
+
+                    SharedPreferences encryptedPrefs = EncryptedSharedPreferences.create(
+                            context,
+                            "TokenPrefs",
+                            masterKey,
+                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                    );
+
+                    refreshToken = encryptedPrefs.getString("refresh_token", "");
+                } catch (GeneralSecurityException | IOException e) {
+                    Log.e("Onboarding", "Error initializing encrypted preferences", e);
+                }
+
+                Log.e(TAG, "Attempting to refresh token with refresh token: " + refreshToken);
+
+                URL url = new URL(serverUrl + "/v2/token/refresh");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+
+                JSONObject body = new JSONObject();
+                body.put("refresh_token", refreshToken);
+                body.put("client_id", "shareit_android");
+                conn.getOutputStream().write(body.toString().getBytes());
+
+
+                if (conn.getResponseCode() == 200) {
+                    String responseBody = readResponseBody(conn);
+                    Log.e(TAG, "Token exchange response code: " + responseBody);
+                    JSONObject json = new JSONObject(responseBody);
+                    String newAccessToken = json.getString("access_token");
+
+                    MasterKey masterKey = new MasterKey.Builder(context)
+                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                            .build();
+
+                    SharedPreferences encryptedPrefs = EncryptedSharedPreferences.create(
+                            context,
+                            "TokenPrefs",
+                            masterKey,
+                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                    );
+
+                    encryptedPrefs.edit().putString("access_token", newAccessToken).apply();
+
+                    if (onSuccess != null) {
+                        new Handler(Looper.getMainLooper()).post(onSuccess);
+                    }
                 } else {
                     Log.e(TAG, "Failed to refresh token. Server responded with code: " + conn.getResponseCode());
                     MasterKey masterKey = new MasterKey.Builder(context)

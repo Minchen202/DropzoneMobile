@@ -6,6 +6,9 @@
     <string name="device_approval_desc">This device has to be approved from another trusted device. <a href="https://shareit.cns-studios.com/">Why?</a></string>
     <string name="recover_device_title">Recover device?</string>
     <string name="recover_device_desc">This device will become the only trusted device. Previously uploaded files are permanently lost.</string>
+    <string name="device_denied_title">Device Denied</string>
+    <string name="device_denied_desc">This device got rejected.</string>
     <string name="cancel">Cancel</string>
     <string name="recover">Recover</string>
+    <string name="ok">Okay</string>
 </resources>
